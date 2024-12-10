@@ -16,19 +16,20 @@ class PhotoCreate(StatesGroup):
 
 @router.message(CommandStart())
 async def start(message: Message):
-    await message.answer(f"Привет, @{message.from_user.username}! 🎩✨\n"
-                         f"Зарегистрируйся и открой для себя мир волшебства с обёртками для подарков. Создавай свои шедевры и дари радость с каждым сюрпризом!\n"
-                         f"Давай творить! 🎁🎉", reply_markup=kb.start)
+    await message.answer(f"Привет {message.from_user.first_name}!👋 Рады видеть тебя\nв нашем боте о Ростове-на-Дону! 🌆✨\n"
+                         f"Ты — турист или местный житель? В любом случае, мы поможем тебе открыть город заново\n"
+                         f"или узнать что-то новое! 🚶‍♂️🚶‍♀️", reply_markup=kb.start)
 
 
-@router.callback_query(F.data == "register")
-async def register(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "On_the_way")
+async def On_the_way(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await state.update_data(id=callback.from_user.id)
     data = await state.get_data()
-    await callback.message.answer(f"✅ Отлично! Вы успешно зарегистрировались.\n"
-                                  f"Ваш ID: {data["id"]}\n"
-                  f"Теперь вы можете создавать свои уникальные обёртки для подарков! 🎁🎨", reply_markup=kb.create)
+    await callback.message.answer(f"Отлично!🌟 Чем вам помочь?\n"
+                                   f"Хотите посетить достопримечательности,\n"
+                                   f"вкусно поесть 🍽️ или сходить в торговый центр 🛍️?\n"
+                                   f"Выберите, что вам интересно:", reply_markup=kb.apply_info)
     await state.clear()
 
 @router.callback_query(F.data == "create")

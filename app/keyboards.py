@@ -4,11 +4,12 @@ from gc import callbacks
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
 start = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Зарeгистрироваться", callback_data="register")]
+    [InlineKeyboardButton(text="Поехали", callback_data="On_the_way")]
 ], resize_keyboard=True)
 
 apply_info = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Принять", callback_data="apply"), InlineKeyboardButton(text="Отклонить", callback_data="create")]
+    [InlineKeyboardButton(text="Что посетить?", callback_data="choice")],
+    [InlineKeyboardButton(text="Торговые центры", callback_data="choice"), InlineKeyboardButton(text="Где поесть?", callback_data="choice")]
 ])
 
 create = InlineKeyboardMarkup(inline_keyboard=[
