@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -18,13 +18,17 @@ class Registration(StatesGroup):
 class PhotoCreate(StatesGroup):
     photos = State()
 
-@router.message(Command("start"))
+
+@router.message(CommandStart())
 async def start(message: Message, state: FSMContext):
     global pool
     pool = await create_pool()
-    await message.answer(
-        "Привет! Давай настроим твои предпочтения. Какие типы кухни тебе нравятся? (например, итальянская, японская)")
-    await state.set_state(PreferencesForm.cuisine)  # Исправлено
+    await message.answer(f"Привет {message.from_user.first_name}!👋 Рады видеть тебя\nв нашем боте о Ростове-на-Дону! 🌆✨\n"
+                         f"Ты — турист или местный житель? В любом случае, мы поможем тебе открыть город заново\n"
+                         f"или узнать что-то новое! 🚶‍♂️🚶‍♀️"
+                         f"Привет! Давай настроим твои предпочтения. Какие типы кухни тебе нравятся? (например, итальянская, японская)")
+    await state.set_state(PreferencesForm.cuisine)
+
 
 @router.message(PreferencesForm.cuisine)
 async def process_cuisine(message: Message, state: FSMContext):
@@ -33,6 +37,7 @@ async def process_cuisine(message: Message, state: FSMContext):
     await state.update_data(cuisine=cuisine)
     await message.answer("Отлично! Теперь укажи свои интересы (например, искусство, туризм)")
     await state.set_state(PreferencesForm.interests)
+
 
 @router.message(PreferencesForm.interests)
 async def process_interests(message: Message, state: FSMContext):
@@ -52,7 +57,17 @@ async def process_interests(message: Message, state: FSMContext):
         else:
             # Создаем нового пользователя
             await connection.execute("INSERT INTO users (user_id, username, preferences) VALUES ($1, $2, $3)", user_id, message.from_user.username, json.dumps(preferences))
-    await message.answer("Спасибо! Твои предпочтения сохранены.")
+    await message.answer("Спасибо! Твои предпочтения сохранены.", reply_markup=kb.start)
+
+@router.callback_query(F.data == "On_the_way")
+async def On_the_way(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await state.update_data(id=callback.from_user.id)
+    data = await state.get_data()
+    await callback.message.answer(f"Отлично!🌟 Чем вам помочь?\n"
+                                   f"Хотите посетить достопримечательности,\n"
+                                   f"вкусно поесть 🍽️ или сходить в торговый центр 🛍️?\n"
+                                   f"Выберите, что вам интересно:", reply_markup=kb.apply_info)
     await state.clear()
 
 ####
