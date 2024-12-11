@@ -8,10 +8,13 @@ start = InlineKeyboardMarkup(inline_keyboard=[
 ], resize_keyboard=True)
 
 apply_info = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Что посетить?", callback_data="choice")],
-    [InlineKeyboardButton(text="Торговые центры", callback_data="choice"), InlineKeyboardButton(text="Где поесть?", callback_data="choice")]
+    [InlineKeyboardButton(text="Рекомендация от ChatGPT", callback_data="randomChatGPT")],
+    [InlineKeyboardButton(text="Что посетить?", callback_data="visit"), InlineKeyboardButton(text="Где поесть?", callback_data="eat")]
 ])
 
-create = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Создать обёртку", callback_data="create")]
-], resize_keyboard=True)
+location_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Отправить местоположение", request_location=True)]
+    ],
+    resize_keyboard=True
+)

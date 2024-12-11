@@ -7,3 +7,6 @@ class PreferencesForm(StatesGroup):
 class RateForm(StatesGroup):
     place = State()
     rating = State()
+
+class pointForm(StatesGroup):
+    waiting_for_location = State()
