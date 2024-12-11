@@ -10,8 +10,4 @@ apply_info = InlineKeyboardMarkup(inline_keyboard=[
 ])
 
 location_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text="Отправить местоположение", request_location=True)]
-    ],
-    resize_keyboard=True
-)
+    keyboard=[[KeyboardButton(text="Отправить местоположение", request_location=True)]], resize_keyboard=True)

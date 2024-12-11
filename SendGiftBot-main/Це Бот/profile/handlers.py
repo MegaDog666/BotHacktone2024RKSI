@@ -40,8 +40,8 @@ async def start(message: Message, state: FSMContext):
         if exists:
             preferences = await connection.fetchrow("SELECT preferences FROM users WHERE user_id = $1;", message.from_user.id)
             preferences = json.loads(preferences['preferences'])
-            cuisine_out = ", ".join([i.title() for i in preferences["cuisine"]])
-            interests_out = ", ".join([i.title() for i in preferences["interests"]])
+            cuisine_out = ", ".join([i.title() for i in preferences["cuisine"].split(",")])
+            interests_out = ", ".join([i.title() for i in preferences["interests"].split(",")])
             await message.reply(
                 f"Привет, {message.from_user.username}! 😊\n"
                 f"Вот твои текущие настройки:\n\n"
@@ -156,7 +156,7 @@ async def edit_profile_cuisine_preferences(callback: CallbackQuery, state: FSMCo
             "interests": interests
         }
         await connection.execute("UPDATE users SET preferences = $1 WHERE user_id = $2", json.dumps(preferences), data["user_id_edit"])
-    await callback.message.answer("✅ Ваши предпочтения по еде успешно изменены! Используйте комманду /profile, чтобы увидеть текущие предпочтения.")
+    await callback.message.answer("✅ Ваши предпочтения по еде успешно изменены! Используйте комманду /profile, чтобы увидеть текущие предпочтения.", reply_markup=kbstart)
     await state.clear()
 
 @router.callback_query(F.data == "edit_profile_interest_preferences")
@@ -198,7 +198,7 @@ async def edit_profile_interest_preferences(callback: CallbackQuery, state: FSMC
             "interests": data["interests_edit"]
         }
         await connection.execute("UPDATE users SET preferences = $1 WHERE user_id = $2", json.dumps(preferences), data["user_id_edit"])
-    await callback.message.answer("✅ Ваши предпочтения по интересам успешно изменены! Используйте комманду /profile, чтобы увидеть текущие предпочтения.")
+    await callback.message.answer("✅ Ваши предпочтения по интересам успешно изменены! Используйте комманду /profile, чтобы увидеть текущие предпочтения.", reply_markup=kbstart)
     await state.clear()
 
 @router.callback_query(F.data == "edit_profile_cancel")

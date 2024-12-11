@@ -17,7 +17,7 @@ async def search_places(query, api_key, longitude, latitude):
         "radius": 5000,
         "key": api_key,
         "locale": "ru_RU",
-        "fields": "items.reviews,items.point",  # Добавляем рейтинг
+        "fields": "items.reviews,items.point,items.description",  # Добавляем рейтинг
     }
 
     ssl_context = ssl.create_default_context(cafile=certifi.where())
@@ -62,6 +62,8 @@ async def search_by_interests(interests, api_key, longitude, latitude):
         address = place.get("address_name", "Адрес не указан")
         rating = get_rating(reviews=place.get("reviews", {}))
         point = place.get("point", {})
+        purpose_name = place.get("purpose_name")
+        description = place.get("description")
         latitude = point.get("lat")
         longitude = point.get("lon")
         results.append({
@@ -69,7 +71,9 @@ async def search_by_interests(interests, api_key, longitude, latitude):
             "address_name": address,
             "rating": rating,
             "latitude": latitude,
-            "longitude": longitude
+            "longitude": longitude,
+            "purpose_name": purpose_name,
+            "description": description
         })
 
     return results
@@ -83,6 +87,8 @@ async def search_by_cuisine(cuisine, api_key, longitude, latitude):
         address = place.get("address_name", "Адрес не указан")
         rating = get_rating(reviews=place.get("reviews", {}))
         point = place.get("point", {})
+        purpose_name = place.get("purpose_name")
+        description = place.get("description")
         latitude = point.get("lat")
         longitude = point.get("lon")
         results.append({
@@ -90,7 +96,9 @@ async def search_by_cuisine(cuisine, api_key, longitude, latitude):
             "address_name": address,
             "rating": rating,
             "latitude": latitude,
-            "longitude": longitude
+            "longitude": longitude,
+            "purpose_name": purpose_name,
+            "description": description
         })
 
     return results

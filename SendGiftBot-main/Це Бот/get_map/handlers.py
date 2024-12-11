@@ -23,7 +23,7 @@ class map_struct(StatesGroup):
 @router.callback_query(F.data == "On_the_way")
 async def answer_callback(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
-    await callback.message.answer(f"Пожалуйста введи ваше местоположение")
+    await callback.message.answer(f"Пожалуйста введи ваше местоположение", reply_markup=kb.location_keyboard)
     await state.set_state(pointForm.waiting_for_location)
 
 @router.message(F.location, pointForm.waiting_for_location)
@@ -94,14 +94,22 @@ async def eat_handler(callback: CallbackQuery, state: FSMContext, API_KEY=API_KE
         await callback.message.answer("Найденные рестораны:")
         for place in places[:5]:
             name = place.get("name", "Неизвестный ресторан")
+            description = place.get("description", "Описание не найдено")
             address = place.get('address_name', "Адрес не указан")
             rating = place.get("rating", "Нет рейтинга")
+            if not description:
+                description = answer(description, f"То напиши своё описания, используя название, адресс и рейтинг ({name}, {address}, {rating})")
+            purpose_name = place.get("purpose_name")
+            try:
+                name_out = name.split(",")[1] if name.split(",")[1] == purpose_name.lower() else name
+            except AttributeError:
+                name_out = name
             latitude = place.get("latitude")
             longitude = place.get("longitude")
-            await callback.message.answer(f"🏬 *Название:* {name.split(",")[0]}\n📍 *Адрес:* {address}\n⭐ *Рейтинг:* {rating} ⭐\n\n"
+            await callback.message.answer(f"🏬 *Название:* {name.split(",")[0]}\n📍 *Адрес:* {address}\n *Описание:* {description if description else "Описание не найдено"}\n⭐ *Рейтинг:* {rating} ⭐\n\n"
                                                 "Вот построенный маршрут:", parse_mode="Markdown")
             await callback.message.answer_venue(
-                title=name.split(",")[0],
+                title=name_out,
                 address=address,
                 latitude=latitude,
                 longitude=longitude,
@@ -131,17 +139,26 @@ async def visit_handler(callback: CallbackQuery, state: FSMContext, API_KEY=API_
     places = await search_by_interests(interests, API_KEY, user_longitude, user_latitude)
 
     if places:
-        await callback.message.answer("Найденные места:")
+        await callback.message.answer("Подождите, введётся обработка 🔄\n"
+                                      "Найденные места:")
         for place in places[:5]:  # Показываем первые 5 мест
             name = place.get("name", "Неизвестное место")
+            description = place.get("description", "Описание не найдено")
             address = place.get('address_name', "Адрес не указан")
             rating = place.get("rating", "Нет рейтинга")  # Используем функцию для получения рейтинга
+            if not description:
+                description = answer(description, f"То напиши своё описания, используя название, адресс и рейтинг ({name}, {address}, {rating})")
+            purpose_name = place.get("purpose_name")
+            try:
+                name_out = name.split(",")[1] if name.split(",")[1] == purpose_name.lower() else name
+            except AttributeError:
+                name_out = name
             latitude = place.get("latitude")
             longitude = place.get("longitude")
-            await callback.message.answer(f"🏬 *Название:* {name.split(",")[0]}\n📍 *Адрес:* {address}\n⭐ *Рейтинг:* {rating} ⭐\n\n"
+            await callback.message.answer(f"🏬 *Название:* {name_out}\n📍 *Адрес:* {address}\n📅 *Описание:* {description if description else "Описание не найдено"}\n⭐ *Рейтинг:* {rating} ⭐\n\n"
                                                 "Вот построенный маршрут:", parse_mode="Markdown")
             await callback.message.answer_venue(
-                title=name.split(",")[0],
+                title=name_out,
                 address=address,
                 latitude=latitude,
                 longitude=longitude,
