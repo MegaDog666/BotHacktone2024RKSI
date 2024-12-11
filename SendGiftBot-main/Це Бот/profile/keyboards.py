@@ -1,5 +1,9 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
+start = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="Поехали", callback_data="On_the_way")]
+], resize_keyboard=True)
+
 apply_right = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="✅ Да, всё верно!", callback_data="yes_apply_right"), InlineKeyboardButton(text="↩️ Нет, давай начнем заново", callback_data="no_apply_right")]
 ], resize_keyboard=True)
